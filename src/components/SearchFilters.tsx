@@ -28,7 +28,7 @@ const SearchFiltersComponent: React.FC<SearchFiltersProps> = ({
   const handleFilterChange = (key: keyof SearchFilters, value: string) => {
     onFiltersChange({
       ...filters,
-      [key]: value
+      [key]: value === 'all' ? '' : value
     });
   };
 
@@ -45,14 +45,14 @@ const SearchFiltersComponent: React.FC<SearchFiltersProps> = ({
           <div className="space-y-2">
             <Label htmlFor="branch">Branch</Label>
             <Select
-              value={filters.branchId}
+              value={filters.branchId || 'all'}
               onValueChange={(value) => handleFilterChange('branchId', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select branch" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Branches</SelectItem>
+                <SelectItem value="all">All Branches</SelectItem>
                 {branches.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
                     {branch.name} ({branch.code})
@@ -65,14 +65,14 @@ const SearchFiltersComponent: React.FC<SearchFiltersProps> = ({
           <div className="space-y-2">
             <Label htmlFor="category">Dispatch Category</Label>
             <Select
-              value={filters.categoryId}
+              value={filters.categoryId || 'all'}
               onValueChange={(value) => handleFilterChange('categoryId', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
