@@ -6,18 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Branch, DispatchCategory, SearchFilters } from '../types/dispatch';
 
-interface SearchFiltersProps {
-  branches: Branch[];
-  categories: DispatchCategory[];
-  filters: SearchFilters;
-  onFiltersChange: (filters: SearchFilters) => void;
-  onSearch: () => void;
-  isLoading: boolean;
-}
-
-const SearchFiltersComponent: React.FC<SearchFiltersProps> = ({
+const SearchFiltersComponent = ({
   branches,
   categories,
   filters,
@@ -25,7 +15,7 @@ const SearchFiltersComponent: React.FC<SearchFiltersProps> = ({
   onSearch,
   isLoading
 }) => {
-  const handleFilterChange = (key: keyof SearchFilters, value: string) => {
+  const handleFilterChange = (key, value) => {
     onFiltersChange({
       ...filters,
       [key]: value === 'all' ? '' : value
