@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import {
   Container,
@@ -7,7 +6,9 @@ import {
   CardContent,
   Box,
   Chip,
-  Grid
+  Grid,
+  Tabs,
+  Tab
 } from '@mui/material';
 import {
   Truck,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 import SearchFiltersComponent from '../components/SearchFilters';
 import ItemsList from '../components/ItemsList';
+import ItemsTable from '../components/ItemsTable';
 import CreatePODDialog from '../components/CreatePODDialog';
 import { mockBranches, mockCategories, mockItems, mockDrivers, mockVehicles } from '../data/mockData';
 
@@ -34,6 +36,7 @@ const DispatchManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showCreatePOD, setShowCreatePOD] = useState(false);
   const [createdPODs, setCreatedPODs] = useState([]);
+  const [viewMode, setViewMode] = useState(0); // 0 for cards, 1 for table
 
   const filteredItems = useMemo(() => {
     return mockItems.filter(item => {
@@ -61,6 +64,14 @@ const DispatchManagement = () => {
       setSelectedItems(prev => [...prev, itemId]);
     } else {
       setSelectedItems(prev => prev.filter(id => id !== itemId));
+    }
+  };
+
+  const handleSelectAll = (selected) => {
+    if (selected) {
+      setSelectedItems(searchResults.map(item => item.id));
+    } else {
+      setSelectedItems([]);
     }
   };
 
@@ -139,12 +150,29 @@ const DispatchManagement = () => {
       />
 
       {searchResults.length > 0 && (
-        <ItemsList
-          items={searchResults}
-          selectedItems={selectedItems}
-          onItemSelect={handleItemSelect}
-          onCreatePOD={handleCreatePOD}
-        />
+        <Box sx={{ mt: 3 }}>
+          <Tabs value={viewMode} onChange={(e, newValue) => setViewMode(newValue)} sx={{ mb: 2 }}>
+            <Tab label="Card View" />
+            <Tab label="Table View" />
+          </Tabs>
+          
+          {viewMode === 0 ? (
+            <ItemsList
+              items={searchResults}
+              selectedItems={selectedItems}
+              onItemSelect={handleItemSelect}
+              onCreatePOD={handleCreatePOD}
+            />
+          ) : (
+            <ItemsTable
+              items={searchResults}
+              selectedItems={selectedItems}
+              onItemSelect={handleItemSelect}
+              onSelectAll={handleSelectAll}
+              onCreatePOD={handleCreatePOD}
+            />
+          )}
+        </Box>
       )}
 
       {createdPODs.length > 0 && (
