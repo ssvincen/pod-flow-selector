@@ -1,15 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Box,
-  Chip,
-  Grid,
-  Tabs,
-  Tab
-} from '@mui/material';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Truck,
   Package,
@@ -98,47 +90,33 @@ const DispatchManagement = () => {
   const selectedItemsData = searchResults.filter(item => selectedItems.includes(item.id));
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-          <Box>
-            <Typography variant="h3" component="h1" gutterBottom>
-              Dispatch Management
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              Search and manage dispatch items, create delivery PODs
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Card>
-              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2 }}>
-                <Package size={20} color="#1976d2" />
-                <Box>
-                  <Typography variant="caption" display="block">
-                    Total Items
-                  </Typography>
-                  <Typography variant="h5" fontWeight="bold">
-                    {mockItems.length}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2 }}>
-                <CheckCircle size={20} color="#2e7d32" />
-                <Box>
-                  <Typography variant="caption" display="block">
-                    PODs Created
-                  </Typography>
-                  <Typography variant="h5" fontWeight="bold">
-                    {createdPODs.length}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
-      </Box>
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold">Dispatch Management</h1>
+          <p className="text-muted-foreground">Search and manage dispatch items, create delivery PODs</p>
+        </div>
+        <div className="flex gap-4">
+          <Card>
+            <CardContent className="flex items-center gap-3 p-4">
+              <Package size={20} className="text-primary" />
+              <div>
+                <p className="text-xs text-muted-foreground">Total Items</p>
+                <p className="text-2xl font-bold">{mockItems.length}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="flex items-center gap-3 p-4">
+              <CheckCircle size={20} className="text-green-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">PODs Created</p>
+                <p className="text-2xl font-bold">{createdPODs.length}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       <SearchFiltersComponent
         branches={mockBranches}
@@ -150,20 +128,22 @@ const DispatchManagement = () => {
       />
 
       {searchResults.length > 0 && (
-        <Box sx={{ mt: 3 }}>
-          <Tabs value={viewMode} onChange={(e, newValue) => setViewMode(newValue)} sx={{ mb: 2 }}>
-            <Tab label="Card View" />
-            <Tab label="Table View" />
-          </Tabs>
+        <Tabs defaultValue="cards" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="cards">Card View</TabsTrigger>
+            <TabsTrigger value="table">Table View</TabsTrigger>
+          </TabsList>
           
-          {viewMode === 0 ? (
+          <TabsContent value="cards">
             <ItemsList
               items={searchResults}
               selectedItems={selectedItems}
               onItemSelect={handleItemSelect}
               onCreatePOD={handleCreatePOD}
             />
-          ) : (
+          </TabsContent>
+          
+          <TabsContent value="table">
             <ItemsTable
               items={searchResults}
               selectedItems={selectedItems}
@@ -171,64 +151,46 @@ const DispatchManagement = () => {
               onSelectAll={handleSelectAll}
               onCreatePOD={handleCreatePOD}
             />
-          )}
-        </Box>
+          </TabsContent>
+        </Tabs>
       )}
 
       {createdPODs.length > 0 && (
-        <Card sx={{ mt: 4 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Recently Created PODs
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {createdPODs.slice(-3).map((pod) => {
-                const driver = mockDrivers.find(d => d.id === pod.driverId);
-                const vehicle = mockVehicles.find(v => v.id === pod.vehicleId);
-                
-                return (
-                  <Box
-                    key={pod.id}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      p: 2,
-                      border: 1,
-                      borderColor: 'divider',
-                      borderRadius: 1
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Package size={20} color="#1976d2" />
-                        <Box>
-                          <Typography variant="body2" fontWeight="medium">
-                            {pod.podNumber}
-                          </Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            {pod.items.length} items
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Truck size={16} color="#666" />
-                        <Typography variant="body2">
-                          {driver?.name} • {vehicle?.plateNumber}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Calendar size={16} color="#666" />
-                        <Typography variant="body2">
-                          {pod.estimatedDelivery}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Chip label={pod.status} color="primary" size="small" />
-                  </Box>
-                );
-              })}
-            </Box>
+        <Card>
+          <CardHeader>
+            <CardTitle>Recently Created PODs</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {createdPODs.slice(-3).map((pod) => {
+              const driver = mockDrivers.find(d => d.id === pod.driverId);
+              const vehicle = mockVehicles.find(v => v.id === pod.vehicleId);
+              
+              return (
+                <div
+                  key={pod.id}
+                  className="flex justify-between items-center p-4 border rounded-lg"
+                >
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Package size={20} className="text-primary" />
+                      <div>
+                        <p className="font-medium">{pod.podNumber}</p>
+                        <p className="text-sm text-muted-foreground">{pod.items.length} items</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Truck size={16} className="text-muted-foreground" />
+                      <p className="text-sm">{driver?.name} • {vehicle?.plateNumber}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="text-muted-foreground" />
+                      <p className="text-sm">{pod.estimatedDelivery}</p>
+                    </div>
+                  </div>
+                  <Badge>{pod.status}</Badge>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}
@@ -241,7 +203,7 @@ const DispatchManagement = () => {
         vehicles={mockVehicles}
         onCreatePOD={handlePODCreated}
       />
-    </Container>
+    </div>
   );
 };
 
